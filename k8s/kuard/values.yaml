@@ -1,0 +1,45 @@
+image:
+  repository: gcr.io
+  name: kuar-demo/kuard-amd64
+  version: 1
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  port: 8080
+  liveness:
+    path: /healthy
+    initialDelaySeconds: 30
+    timeoutSeconds: 1
+    periodSeconds: 10
+    failureThreshold: 3
+  readiness:
+    path: /ready
+    initialDelaySeconds: 30
+    timeoutSeconds: 1
+    periodSeconds: 10
+    failureThreshold: 3
+
+ingress-nginx:
+  controller:
+    ingressClass: nginx
+    service:
+      externalTrafficPolicy: Local
+      loadBalancerIP: 127.0.0.1
+
+ingress:
+  enabled: true
+  host: localhost
+  limitConnections: 10
+  limitRps: 1
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 128Mi
+  limits:
+    cpu: 1000m
+    memory: 256Mi

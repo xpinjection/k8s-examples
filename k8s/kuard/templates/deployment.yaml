@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kuard.fullname" . }}
+  labels:
+    {{- include "kuard.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kuard.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kuard.selectorLabels" . | nindent 8 }}
+      annotations:
+        config/checksum: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+    spec:
+      terminationGracePeriodSeconds: 10
+      restartPolicy: Always
+      volumes:
+        - name: "kuard-data"
+          emptyDir: { }
+        - name: tls-certs
+          secret:
+            secretName: kuard-tls
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.version }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.service.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.service.liveness.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.service.liveness.timeoutSeconds }}
+            periodSeconds: {{ .Values.service.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.service.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.service.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.service.readiness.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.service.readiness.timeoutSeconds }}
+            periodSeconds: {{ .Values.service.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.service.readiness.failureThreshold }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          volumeMounts:
+            - mountPath: "/data"
+              name: "kuard-data"
+            - mountPath: "/tls"
+              name: "tls-certs"
+              readOnly: true

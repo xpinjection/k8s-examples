@@ -1,0 +1,11 @@
+controller:
+  service:
+    targetPorts:
+      http: http
+      https: http
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-central-1:747397188821:certificate/1e1c2e28-95ef-4b48-a019-56b8d6dc68ba
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+      service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+      external-dns.alpha.kubernetes.io/hostname: dev.xpinjection.com.
