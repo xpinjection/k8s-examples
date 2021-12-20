@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kuard-helm
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.docker.internal:6443
+    namespace: kuard-prod
+  project: default
+  source:
+    helm:
+      releaseName: kuard
+      valueFiles:
+        - values.yaml
+      values: |
+        ingress:
+          host: prod.localhost
+    path: k8s/kuard
+    repoURL: https://github.com/xpinjection/k8s-examples.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
