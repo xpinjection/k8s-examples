@@ -32,11 +32,17 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: {{ .Values.service.liveness.path }}
+              port: http
+            timeoutSeconds: {{ .Values.service.liveness.timeoutSeconds }}
+            periodSeconds: 1
+            failureThreshold: {{ .Values.service.startup.waitSeconds }}
           livenessProbe:
             httpGet:
               path: {{ .Values.service.liveness.path }}
               port: http
-            initialDelaySeconds: {{ .Values.service.liveness.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.service.liveness.timeoutSeconds }}
             periodSeconds: {{ .Values.service.liveness.periodSeconds }}
             failureThreshold: {{ .Values.service.liveness.failureThreshold }}
@@ -44,7 +50,6 @@ spec:
             httpGet:
               path: {{ .Values.service.readiness.path }}
               port: http
-            initialDelaySeconds: {{ .Values.service.readiness.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.service.readiness.timeoutSeconds }}
             periodSeconds: {{ .Values.service.readiness.periodSeconds }}
             failureThreshold: {{ .Values.service.readiness.failureThreshold }}

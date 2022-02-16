@@ -43,15 +43,13 @@ spec:
             httpGet:
               path: /healthy
               port: 8080
-            initialDelaySeconds: 30
             timeoutSeconds: 1
-            periodSeconds: 10
-            failureThreshold: 3
+            periodSeconds: 5
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /healthy
               port: 8080
-            initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 10
             failureThreshold: 3
@@ -59,7 +57,6 @@ spec:
             httpGet:
               path: /ready
               port: 8080
-            initialDelaySeconds: 30
             timeoutSeconds: 1
             periodSeconds: 10
             failureThreshold: 3

@@ -10,15 +10,15 @@ fullnameOverride: ""
 
 service:
   port: 8080
+  startup:
+    waitSeconds: 10
   liveness:
     path: /healthy
-    initialDelaySeconds: 30
     timeoutSeconds: 1
     periodSeconds: 10
     failureThreshold: 3
   readiness:
     path: /ready
-    initialDelaySeconds: 30
     timeoutSeconds: 1
     periodSeconds: 10
     failureThreshold: 3
