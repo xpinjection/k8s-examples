@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: library-config
+data:
+  spring.profiles.active: dev,admin
+  spring.datasource.url: "jdbc:postgresql://postgres-postgresql/library"

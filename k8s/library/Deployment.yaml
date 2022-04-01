@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library
+  labels:
+    app: library
+spec:
+  template:
+    metadata:
+      name: library
+      labels:
+        app: library
+    spec:
+      containers:
+        - image: xpinjection.com/library:0.1.0
+          name: library
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: library-config
+            - secretRef:
+                name: library-db-credentials
+          env:
+            - name: spring.security.user.password
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: actuator-credentials
+            - name: spring.security.user.name
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: actuator-credentials
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "256Mi"
+          startupProbe:
+            httpGet:
+              path: /admin/health/liveness
+              port: 8080
+            timeoutSeconds: 1
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /admin/health/liveness
+              port: 8080
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /admin/health/readiness
+              port: 8080
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: library
