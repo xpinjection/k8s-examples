@@ -3,7 +3,7 @@ image:
   name: kuar-demo/kuard-amd64
   version: 1
 
-replicaCount: 3
+replicaCount: 2
 
 nameOverride: ""
 fullnameOverride: ""
